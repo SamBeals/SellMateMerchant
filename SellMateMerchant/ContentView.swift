@@ -1,55 +1,29 @@
-//
-//  ContentView.swift
-//  SellMateMerchant
-//
-//  Created by Sam on 5/26/26.
-//
-
 import SwiftUI
-import SwiftData
 
 struct ContentView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
+    @EnvironmentObject private var appViewModel: AppViewModel
 
     var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
-                    }
-                }
-                .onDelete(perform: deleteItems)
+        TabView {
+            NavigationStack {
+                DashboardView(viewModel: appViewModel.dashboardViewModel)
             }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
-                }
+            .tabItem {
+                Label("Dashboard", systemImage: "chart.bar")
             }
-        } detail: {
-            Text("Select an item")
-        }
-    }
 
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
-        }
-    }
+            NavigationStack {
+                MachineInventoryView(viewModel: appViewModel.machineInventoryViewModel)
+            }
+            .tabItem {
+                Label("Inventory", systemImage: "shippingbox")
+            }
 
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
+            NavigationStack {
+                MasterProductsView(viewModel: appViewModel.masterProductsViewModel)
+            }
+            .tabItem {
+                Label("Products", systemImage: "list.bullet.rectangle")
             }
         }
     }
@@ -57,5 +31,5 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
+        .environmentObject(AppViewModel())
 }
