@@ -25,6 +25,13 @@ struct ContentView: View {
             .tabItem {
                 Label("Products", systemImage: "list.bullet.rectangle")
             }
+            
+            NavigationStack {
+                SalesView(viewModel: appViewModel.salesViewModel)
+            }
+            .tabItem {
+                Label("Sales", systemImage: "cart")
+            }
         }
     }
 }

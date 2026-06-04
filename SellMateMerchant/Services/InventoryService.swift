@@ -12,6 +12,7 @@ protocol InventoryServiceProtocol {
     func fetchMachines(merchantId: String) async throws -> [Machine]
     func fetchInventory(machineId: String) async throws -> [InventorySlot]
     func updateInventory(machineId: String, slotId: String, qty: Int, enabled: Bool) async throws
+    func fetchSales(machineId: String, since: Date) async throws -> [Sale]
 }
 
 final class InventoryService: InventoryServiceProtocol {
@@ -88,6 +89,24 @@ final class InventoryService: InventoryServiceProtocol {
         }
         #else
         return [InventorySlot(id: "A1", productId: "", qty: 5, enabled: true, updatedAt: Date())]
+        #endif
+    }
+
+    func fetchSales(machineId: String, since: Date) async throws -> [Sale] {
+        #if canImport(FirebaseFirestore)
+        let start = Timestamp(date: since)
+        let snapshot = try await db.collection("machines").document(machineId).collection("sales").whereField("timestamp", isGreaterThanOrEqualTo: start).order(by: "timestamp", descending: true).getDocuments()
+        return snapshot.documents.map { doc in
+            let d = doc.data()
+            let ts = d["timestamp"] as? Timestamp
+            let itemsArray = d["items"] as? [[String: Any]] ?? []
+            let items: [SaleItem] = itemsArray.enumerated().map { idx, item in
+                SaleItem(id: item["id"] as? String ?? String(idx), slotId: item["slotId"] as? String ?? "", productId: item["productId"] as? String ?? "", qty: item["qty"] as? Int ?? 0, amountCents: item["amountCents"] as? Int ?? 0)
+            }
+            return Sale(id: doc.documentID, orderId: d["orderId"] as? String ?? doc.documentID, machineId: machineId, timestamp: ts?.dateValue() ?? Date(), items: items, totalCents: d["totalCents"] as? Int ?? 0)
+        }
+        #else
+        return []
         #endif
     }
 
