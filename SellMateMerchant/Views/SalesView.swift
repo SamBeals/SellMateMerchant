@@ -6,18 +6,21 @@ struct SalesView: View {
     var body: some View {
         Group {
             if viewModel.isLoading {
-                ProgressView("Loading sales…")
+                ProgressView("Loading sales...")
             } else if let error = viewModel.errorMessage {
                 VStack(spacing: 12) {
                     Image(systemName: "exclamationmark.triangle")
-                    Text(error).font(.footnote)
+                        .foregroundStyle(.red)
+                    Text(error)
+                        .font(.footnote)
+                        .foregroundStyle(.primary)
                     Button("Retry") { Task { await viewModel.load() } }
                 }
                 .padding()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(.background)
             } else if viewModel.sales.isEmpty {
-                ContentUnavailableView("No Sales Yet", systemImage: "cart") {
-                    Text("Recent sales will appear here.")
-                }
+                ContentUnavailableView("No Sales Yet", systemImage: "cart", description: Text("Recent sales will appear here."))
             } else {
                 List {
                     Section("Today Totals") {
