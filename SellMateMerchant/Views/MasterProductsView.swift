@@ -7,9 +7,7 @@ struct MasterProductsView: View {
     var body: some View {
         VStack(spacing: 0) {
             if let error = viewModel.errorMessage {
-                HStack { Image(systemName: "exclamationmark.triangle"); Text(error).font(.footnote) }
-                    .padding()
-                    .background(Color.red.opacity(0.1))
+                StatusBanner(kind: .error, message: error)
             }
             List(viewModel.working) { product in
                 VStack(alignment: .leading) {

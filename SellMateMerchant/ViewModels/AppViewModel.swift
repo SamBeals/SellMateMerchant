@@ -15,7 +15,11 @@ final class AppViewModel: ObservableObject {
     lazy var masterProductsViewModel = MasterProductsViewModel(app: self)
     lazy var salesViewModel = SalesViewModel(app: self)
 
-    init(service: InventoryServiceProtocol = InventoryService()) {
+    convenience init() {
+        self.init(service: InventoryService())
+    }
+
+    init(service: InventoryServiceProtocol) {
         self.service = service
         FirebaseManager.configure()
     }
@@ -56,4 +60,3 @@ final class AppViewModel: ObservableObject {
         }
     }
 }
-

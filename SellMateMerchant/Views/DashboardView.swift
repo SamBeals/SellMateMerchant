@@ -8,16 +8,18 @@ struct DashboardView: View {
             Section("Machine") {
                 Text(viewModel.machineName)
             }
+            Section("Revenue") {
+                HStack { Text("Today"); Spacer(); Text(viewModel.app.salesViewModel.todayRevenueText) }
+                HStack { Text("This Week"); Spacer(); Text(viewModel.app.salesViewModel.weeklyRevenueText) }
+                HStack { Text("This Month"); Spacer(); Text(viewModel.app.salesViewModel.monthlyRevenueText) }
+            }
             Section("Today") {
-                HStack { Text("Sales"); Spacer(); Text("$\(Double(viewModel.app.salesViewModel.todayTotalCents)/100, specifier: "%.2f")") }
                 HStack { Text("Orders"); Spacer(); Text("\(viewModel.app.salesViewModel.todayOrderCount)") }
                 HStack { Text("Items Sold"); Spacer(); Text("\(viewModel.app.salesViewModel.todayItemsSold)") }
             }
             if viewModel.app.salesViewModel.sales.isEmpty {
                 Section {
-                    ContentUnavailableView("No Sales Yet", systemImage: "chart.bar") {
-                        Text("Sales will appear here as they happen.")
-                    }
+                    ContentUnavailableView("No Sales Yet", systemImage: "chart.bar", description: Text("Sales will appear here as they happen."))
                 }
             } else {
                 Section("Recent") {
@@ -25,7 +27,7 @@ struct DashboardView: View {
                         HStack {
                             Text(sale.timestamp, style: .time)
                             Spacer()
-                            Text("$\(Double(sale.totalCents)/100, specifier: "%.2f")")
+                            Text(viewModel.app.salesViewModel.currencyText(for: sale.totalCents))
                         }
                     }
                 }

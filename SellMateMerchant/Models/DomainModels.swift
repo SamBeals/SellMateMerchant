@@ -6,7 +6,7 @@ struct Merchant: Identifiable, Codable {
     let ownerUid: String
 }
 
-struct Product: Identifiable, Codable {
+struct Product: Identifiable, Codable, Equatable {
     let id: String
     let name: String
     let priceCents: Int
@@ -30,10 +30,27 @@ struct InventorySlot: Identifiable, Codable {
     let updatedAt: Date
 }
 
-struct InventoryRow: Identifiable {
+struct InventoryRow: Identifiable, Equatable {
     let id: String
     let slotId: String
     let product: Product?
     let qty: Int
     let enabled: Bool
+}
+
+struct Sale: Identifiable, Codable {
+    let id: String
+    let orderId: String
+    let machineId: String
+    let timestamp: Date
+    let items: [SaleItem]
+    let totalCents: Int
+}
+
+struct SaleItem: Identifiable, Codable {
+    let id: String
+    let slotId: String
+    let productId: String
+    let qty: Int
+    let amountCents: Int
 }

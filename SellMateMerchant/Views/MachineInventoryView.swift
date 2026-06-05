@@ -9,18 +9,14 @@ struct MachineInventoryView: View {
                 ProgressView("Saving…").padding().background(.thinMaterial)
             }
             if let error = viewModel.errorMessage {
-                HStack { Image(systemName: "exclamationmark.triangle"); Text(error).font(.footnote) }
-                    .padding()
-                    .background(Color.red.opacity(0.1))
+                StatusBanner(kind: .error, message: error)
             }
             if viewModel.isLoading {
                 Spacer()
                 ProgressView("Loading inventory…")
                 Spacer()
             } else if viewModel.rows.isEmpty {
-                ContentUnavailableView("No Inventory", systemImage: "shippingbox") {
-                    Text("No slots found for this machine.")
-                }
+                ContentUnavailableView("No Inventory", systemImage: "shippingbox", description: Text("No slots found for this machine."))
             } else {
                 List {
                     ForEach(viewModel.rows) { row in
